@@ -1,5 +1,6 @@
 import { app, BrowserWindow } from 'electron'
 import path from 'node:path'
+import ipcWin from "../src/core/ipc/ipc-win.ts";
 
 // The built directory structure
 //
@@ -20,7 +21,9 @@ const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']
 
 function createWindow() {
   win = new BrowserWindow({
-    icon: path.join(process.env.PUBLIC, 'electron-vite.svg'),
+    width: 900,
+    height: 600,
+    frame: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },
@@ -29,6 +32,10 @@ function createWindow() {
   // Test active push message to Renderer-process.
   win.webContents.on('did-finish-load', () => {
     win?.webContents.send('main-process-message', (new Date).toLocaleString())
+  })
+
+  win.on('closed', () => {
+    BrowserWindow.getAllWindows().forEach(subWin => subWin.close())
   })
 
   if (VITE_DEV_SERVER_URL) {
@@ -43,4 +50,7 @@ app.on('window-all-closed', () => {
   win = null
 })
 
-app.whenReady().then(createWindow)
+app.whenReady().then(()=>{
+  ipcWin()
+  createWindow()
+})
