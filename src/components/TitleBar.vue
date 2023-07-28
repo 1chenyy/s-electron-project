@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import Constant from "../help/Constant";
+import Utils from "../help/Utils.ts";
 
 function titleClickEvent(type: string) {
-  window.ipc.send(Constant.CHANNEL_ADJUST_WIN, type)
+  Utils.adjustWindows(type)
 }
 </script>
 
